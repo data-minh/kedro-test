@@ -1,0 +1,87 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+#
+# We support interacting with a variety of data stores including local file systems, cloud, network and HDFS
+#
+# An example data set definition can look as follows:
+#
+#bikes:
+#  type: pandas.CSVDataset
+#  filepath: "data/01_raw/bikes.csv"
+#
+reviews_iceberg_raw:
+  type: kedro_spark.iceberg.SparkIcebergDataset.SparkIcebergDataset
+  catalog_name: nessie
+  namespace: kedro_demo
+  table_name: reviews
+
+reviews_iceberg:
+  type: kedro_spark.iceberg.SparkIcebergDataset.SparkIcebergDataset
+  catalog_name: nessie
+  namespace: kedro_demo
+  table_name: reviews_test
+  write_options:
+    mode: overwrite
+    partitionBy: ["created_date"]
+
+curated_reviews_s3:
+  type: spark.SparkDataset
+  filepath: s3a://curated/reviews.csv
+  file_format: csv
+  # credentials: dev_minio
+  save_args:
+    mode: overwrite
+    sep: ','
+    header: True
+
+# Catalog dynamic
+01_raw.{date}.foo_raw_df:
+  type: spark.SparkDataset
+  filepath: data/dynamic_data/reviews/{date}
+  file_format: parquet
+  # credentials: dev_minio
+  load_args:
+    header: True
+    inferSchema: True
+  save_args:
+    sep: '|'
+    header: True
+
+02_intermediate.{date}.foo_intermediate_df:
+  type: spark.SparkDataset
+  filepath: data/dynamic_target/reviews/{date}
+  file_format: parquet
+  # credentials: dev_minio
+  load_args:
+    header: True
+    inferSchema: True
+  save_args:
+    sep: ','
+    header: True
+    mode: overwrite
+
+# Read filter
+filtered_data_raw:
+  type: kedro_spark.FilterDataset.FilteredSparkDataset.FilteredSparkDataset
+  filepath: data/spark_data/target/data_demo
+  file_format: parquet
+  filters: processing_date >= '2025-01-05' and processing_date <= '2025-01-07'
+
+filtered_data_target:
+  type: spark.SparkDataset
+  filepath: data/spark_data/target_filter/data_demo
+  file_format: parquet
+  save_args:
+    header: True
+    mode: overwrite
+    partitionBy: ["processing_date"]
+
+# Dynamic partition filter
+dynamic_filter_raw.{range}:
+  type: kedro_spark.DynamicFilteredDataset.DynamicFilteredDataset.DynamicFilteredSparkDataset
+  filepath: data/spark_data/target/data_demo
+  file_format: parquet
+  range_date: "{range}"
+  partition_column: processing_date
