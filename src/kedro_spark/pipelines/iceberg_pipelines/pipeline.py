@@ -1,7 +1,6 @@
 import logging
 from kedro.pipeline import Pipeline, node, pipeline
 from omegaconf import OmegaConf
-
 from ...helper_functions import *
 
 from .nodes import transform

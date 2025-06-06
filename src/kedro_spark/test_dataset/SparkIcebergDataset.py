@@ -167,8 +167,6 @@ class SparkIcebergDataset(SparkDataset):
             if mode == "append":
                 writer.append()
             elif mode == "overwrite":
-                writer.overwriteAll()
-            elif mode == "overwrite_partitions":
                 writer.overwritePartitions()
             else:
                 raise ValueError(f"Unsupported mode '{mode}' for Iceberg write.")

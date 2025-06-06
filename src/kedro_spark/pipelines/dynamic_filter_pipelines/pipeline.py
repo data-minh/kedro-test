@@ -10,22 +10,15 @@ def create_dynamic_filter_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=load_and_sleep,
-                inputs="dynamic_filter_raw.3",
-                outputs="filtered_data_target",
-                name="dynamic_filter_pipeline",
-            )
-        ]
-    )
-
-
-def create_dynamic_filter_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
-        [
+                inputs="raw_csv",
+                outputs="intermediate_parquet_local.5",
+                name="raw_to_intermediate_in_local",
+            ),
             node(
                 func=load_and_sleep,
-                inputs="vdsvhdvhs.30",
-                outputs="filtered_data_target",
-                name="dynamic_filter_pipeline",
+                inputs="intermediate_parquet_local.5",
+                outputs="reporting_parquet_local.5",
+                name="intermediate_to_reporting_in_local",
             )
         ]
     )

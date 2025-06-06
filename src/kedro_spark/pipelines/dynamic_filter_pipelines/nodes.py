@@ -3,7 +3,7 @@ import time
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-def load_and_sleep(input_df: DataFrame, sleep_duration_seconds: int = 120) -> DataFrame:
+def load_and_sleep(input_df: DataFrame, sleep_duration_seconds: int = 2) -> DataFrame:
     """
     Loads data, pauses the Spark session for observation, and then returns the DataFrame.
     """
@@ -19,4 +19,4 @@ def load_and_sleep(input_df: DataFrame, sleep_duration_seconds: int = 120) -> Da
     print("Resuming Spark execution.")
     
     # Bạn có thể thêm một số thao tác nhỏ sau đó để chứng minh DataFrame vẫn hoạt động
-    return input_df.withColumn("processed_at", F.current_timestamp())
+    return input_df
